@@ -1,0 +1,11 @@
+{
+    "navigationFallback": {
+        "rewrite": "/index.html"
+    },
+    "routes": [
+        {
+            "route": "/resource",
+            "rewrite": "/api/notification-webhook"
+        }
+    ]
+}
