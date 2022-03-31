@@ -5,11 +5,17 @@ module.exports = async function (context, req) {
 
     const sig = req.query.sig;
 
-    context.log("sig: " + sig);
-    context.log("body: " + JSON.stringify(req.body));
+    //context.log('sig: ' + sig);
+    //context.log('body: ' + JSON.stringify(req.body));
 
-    if ((sig) &&
-        (req.body.eventType && req.body.eventType === 'PUT') &&
+    // Check we have a valid signature on the webhook
+    if (!(sig && sig === process.env['SIGNATURE_GUID'])) {
+        context.res = { status: 400 };
+        return
+    }
+
+    // We're only interested in the successful deployment notification
+    if ((req.body.eventType && req.body.eventType === 'PUT') &&
         (req.body.provisioningState && req.body.provisioningState === 'Succeeded')) {
 
         const resourceSegments = req.body.applicationId.split('/');
@@ -17,7 +23,7 @@ module.exports = async function (context, req) {
         const rgName = resourceSegments[4];
         const appName = resourceSegments[8];
 
-        const githubWorkflowDispatchUri = process.env["GITHUB_WORKFLOW_DISPTACH_URI"];
+        const githubWorkflowDispatchUri = process.env['GITHUB_WORKFLOW_DISPTACH_URI'];
 
         const payload = {
             githubWorkflowDispatchUri: githubWorkflowDispatchUri,
@@ -27,7 +33,7 @@ module.exports = async function (context, req) {
             ...req.body
         };
 
-        const url = process.env["WORKFLOW_URI"];
+        const url = process.env['WORKFLOW_URI'];
 
         axios({
             method: 'post',
@@ -41,10 +47,7 @@ module.exports = async function (context, req) {
             .catch(function (error) {
                 console.log(error);
             });
+    }
 
-        context.res = { status: 200 };
-    }
-    else {
-        context.res = { status: 400 };
-    }
+    context.res = { status: 200 };
 }
