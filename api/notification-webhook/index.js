@@ -17,7 +17,10 @@ module.exports = async function (context, req) {
         const rgName = resourceSegments[4];
         const appName = resourceSegments[8];
 
+        const githubWorkflowDispatchUri = process.env["GITHUB_WORKFLOW_DISPTACH_URI"];
+
         const payload = {
+            githubWorkflowDispatchUri: githubWorkflowDispatchUri,
             subscriptionId: subscriptionId,
             rgName: rgName,
             appName: appName,
