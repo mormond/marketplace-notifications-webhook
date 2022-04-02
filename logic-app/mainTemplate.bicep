@@ -2,6 +2,48 @@ param location string = resourceGroup().location
 
 var workflowName = 'managed-app-webhook-1'
 
+resource arm_connection_resource 'Microsoft.Web/connections@2016-06-01' = {
+  name: 'arm'
+  location: location
+  kind: 'V1'
+  properties: {
+    displayName: 'ServicePrincipal'
+    api: {
+      name: 'arm'
+      displayName: 'Azure Resource Manager'
+      description: 'Azure Resource Manager exposes the APIs to manage all of your Azure resources.'
+      id: '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Web/locations/${location}/managedApis/arm'
+      type: 'Microsoft.Web/locations/managedApis'
+    }
+  }
+}
+
+resource kv_connection_resource 'Microsoft.Web/connections@2016-06-01' = {
+  name: 'keyvault'
+  location: location
+  kind: 'V1'
+  properties: {
+    displayName: 'kv'
+    statuses: [
+      {
+        status: 'Ready'
+      }
+    ]
+    alternativeParameterValues: {
+      vaultName: 'kv-notifications-meo'
+    }
+    parameterValueType: 'Alternative'
+    api: {
+      name: 'keyvault'
+      displayName: 'Azure Key Vault'
+      description: 'Azure Key Vault is a service to securely store and access secrets.'
+      id: '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Web/locations/${location}/managedApis/keyvault'
+      type: 'Microsoft.Web/locations/managedApis'
+    }
+    testLinks: []
+  }
+}
+
 resource workflow_resource 'Microsoft.Logic/workflows@2017-07-01' = {
   name: workflowName
   location: location
