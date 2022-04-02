@@ -1,5 +1,7 @@
 # Marketplace Notifications Webhook
 
+## Overview
+
 This repo contains a simple solution for sinking Azure managed application notification events. It consists of:
 
 * A **Static Web App** which acts as a simple proxy to receive and check the notification is valid
@@ -12,13 +14,15 @@ The proxy is necessary because the notification URL format is fixed - some sort 
 
 Only the routing capability and API (Azure function) of the static web app is being used.
 
-## Static Web App
+## Services Deployed
+
+### Static Web App
 
 There is a single function at ```api/notification-webhook``` which checks the webook signature (```?sig=xxx```) query parameter matches the expected value. If it does, it accepts the request.
 
 If the notification is for a new, successful deployment, it calls the Logic App workflow. This worklow invokes a GitHub actions workflow to complete the post deployment steps (typically deploying an application).
 
-### Static Web App Dependencies
+#### Static Web App Dependencies
 
 The following **Application Settings** are required:
 
@@ -26,11 +30,11 @@ The following **Application Settings** are required:
 * ```SIGNATURE_GUID``` - the expected signature parameter value for the webhook call
 * ```WORKFLOW_URI``` - the URI for the deployed Logic Apps workflow
 
-## Logic App
+### Logic App
 
 The Logic App workflow parses the payload from the webhook and queries the ARM API for details of the deployment. It retrieves a GitHub personal access token (PAT) from Key Vault and uses this to authenticate to GitHub. The final step is a call to the dispatch URI to invoke the GitHub workflow.
 
-### Logic App Dependencies
+#### Logic App Dependencies
 
 * API Connections
   * The Logic App requires two API connections
@@ -40,7 +44,7 @@ The Logic App workflow parses the payload from the webhook and queries the ARM A
   * To store the GitHub PAT
   * Use RBAC on the Key Vault to grant access to the Logic App managed identity to access the secrets.
 
-## Deployment
+## Deployment Steps
 
 ### Deploy Static Web App
 
