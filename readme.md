@@ -56,6 +56,19 @@ The Logic App workflow parses the payload from the webhook and queries the ARM A
 
 ### Deploy Logic App
 
-* Create a new Logic App in the Azure Portal
-* Set the **Plan Type** to ```Consumption```
-* Review + create
+* Create the Logic App using the ARM template ```logic-app/mainTemplate.json```
+* You can either deploy with the CLI or [deploy via the Azure Portal](https://portal.azure.com/#create/Microsoft.Template)
+
+### Create a Key Vault to store the GH secret
+
+* Create a Key Vault resource and configure it for RBAC access
+* Grant ```Key Vault Secrets User``` access to the managed identity of your Logic App
+  * You can grant the role assignment in the Azure Portal
+    * Navigate to your Logic App
+    * Naviagte to Settings -> Identity
+    * Click on **Azure role assignments**
+
+### Fix Connections
+
+* You will need to fix up the Logic App connections
+* It's probably simplest to recreate the connections in the designer
